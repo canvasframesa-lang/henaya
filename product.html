@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>تفاصيل المنتج — حنايـة</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+<main>
+  <section class="section">
+    <div class="container">
+      <nav id="crumbs" style="font-size:.85rem;color:var(--ink-soft);margin-bottom:1rem;"></nav>
+      <div id="root"></div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/cart.js"></script>
+<script>
+  Henaya.injectChrome('products');
+
+  const id = new URLSearchParams(location.search).get('id');
+  const p = findProduct(id);
+
+  if(!p){
+    document.getElementById('root').innerHTML = `
+      <div class="empty">
+        <div class="ico">😕</div>
+        <h2>المنتج غير موجود</h2>
+        <p>قد يكون الرابط منتهي الصلاحية.</p>
+        <a class="btn btn-primary" href="products.html">عودة للمنتجات</a>
+      </div>`;
+  } else {
+    const cat = findCategory(p.cat);
+    document.title = p.name + ' — حنايـة';
+    document.getElementById('crumbs').innerHTML =
+      `<a href="index.html">الرئيسية</a> ‹ <a href="products.html">المنتجات</a> ‹ <a href="products.html?cat=${cat.id}">${cat.name}</a> ‹ ${p.name}`;
+
+    const stars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5-Math.round(p.rating));
+    const old = p.oldPrice ? `<span class="old" style="font-size:1.2rem;">${Henaya.fmtSAR(p.oldPrice)}</span>` : '';
+    const save = p.oldPrice ? `<span class="tag sale" style="background:var(--danger);color:#fff;padding:.3rem .7rem;border-radius:999px;font-size:.8rem;">وفّري ${Henaya.fmtSAR(p.oldPrice-p.price)} ر.س</span>` : '';
+
+    document.getElementById('root').innerHTML = `
+    <div class="pd">
+      <div class="gallery">
+        <div class="main">${Henaya.imgWithFallback(p.images[0], p.name)}</div>
+        <div class="thumbs">
+          ${p.images.map((src,i)=>`<img src="${src}" data-i="${i}" class="${i===0?'active':''}" alt="${p.name} ${i+1}"
+              onerror="this.style.background='linear-gradient(135deg,#C9A961,#7A9B5E)';this.src='assets/img/logo-mark.svg';" />`).join('')}
+        </div>
+      </div>
+      <div class="info">
+        <div style="color:var(--ink-soft);font-weight:700;">${cat.name}</div>
+        <h1>${p.name}</h1>
+        <div style="display:flex;align-items:center;gap:.8rem;">
+          <span style="color:var(--accent);font-size:1.1rem;">${stars}</span>
+          <span style="color:var(--ink-soft);font-size:.9rem;">${p.rating} (${p.reviews} تقييم)</span>
+        </div>
+        <div class="price-row">
+          <span class="price">${Henaya.fmtSAR(p.price)} <span style="font-size:1rem;color:var(--ink-soft);">ر.س</span></span>
+          ${old}
+          ${save}
+        </div>
+        <p class="desc">${p.short}</p>
+        <div class="meta">
+          <div><b>الوزن</b>${p.weight}</div>
+          <div><b>المنشأ</b>${p.cat==='kohl'?'أرض الحجاز':p.cat==='oils'?'مغربي / محلي':'المدينة المنورة'}</div>
+          <div><b>المكونات</b>${p.cat==='kohl'?'حجر إثمد طبيعي 100%':'طبيعي 100% بدون إضافات'}</div>
+          <div><b>التوصيل</b>1-3 أيام عمل</div>
+        </div>
+        <div style="display:flex;gap:.8rem;align-items:center;margin:1.3rem 0;">
+          <div class="qty">
+            <button onclick="chg(-1)" aria-label="إنقاص">−</button>
+            <input id="qty" value="1" min="1" />
+            <button onclick="chg(1)" aria-label="زيادة">+</button>
+          </div>
+          <button class="btn btn-primary" style="flex:1;" onclick="addToCart()">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h2l2.4 12.3a2 2 0 0 0 2 1.7h8.2a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/></svg>
+            أضيفي للسلة
+          </button>
+          <a class="btn btn-gold" href="cart.html" onclick="addToCart(true)">اشتري الآن</a>
+        </div>
+        <ul style="list-style:none;padding:0;display:grid;gap:.4rem;color:var(--ink-soft);font-size:.9rem;margin:0;">
+          <li>✓ توصيل مجاني لطلبات +200 ر.س</li>
+          <li>✓ ضمان جودة 100% أو استرجاع المبلغ</li>
+          <li>✓ تغليف هدية مجاني</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="nav">
+        <button class="active" data-tab="desc">الوصف الكامل</button>
+        <button data-tab="benefits">الفوائد</button>
+        <button data-tab="use">طريقة الاستخدام</button>
+        <button data-tab="ship">الشحن والإرجاع</button>
+      </div>
+      <div class="pane active" data-pane="desc"><p style="margin:0;">${p.desc}</p></div>
+      <div class="pane" data-pane="benefits">
+        <ul style="padding-inline-start:1.2rem;margin:0;">
+          ${(p.benefits||[]).map(b=>`<li style="margin-bottom:.4rem;">${b}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="pane" data-pane="use"><p style="margin:0;">${p.use||'—'}</p></div>
+      <div class="pane" data-pane="ship">
+        <p style="margin:0 0 .5rem;"><b style="color:var(--primary-dark);">الشحن:</b> 1-3 أيام عمل لكافة مدن المملكة. توصيل مجاني للطلبات التي تتجاوز 200 ر.س، وإلا فرسم ثابت 20 ر.س.</p>
+        <p style="margin:0;"><b style="color:var(--primary-dark);">الإرجاع:</b> يمكنك إرجاع المنتج خلال 14 يوم من الاستلام إذا كان بحالته الأصلية وعلبته مغلقة.</p>
+      </div>
+    </div>
+
+    <h2 style="margin-top:3rem;">قد يعجبك أيضاً</h2>
+    <div class="cards" id="related"></div>
+    `;
+
+    // tabs
+    document.querySelectorAll('.tabs .nav button').forEach(b=>{
+      b.onclick = () => {
+        document.querySelectorAll('.tabs .nav button').forEach(x=>x.classList.remove('active'));
+        document.querySelectorAll('.tabs .pane').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        document.querySelector(`.tabs .pane[data-pane="${b.dataset.tab}"]`).classList.add('active');
+      };
+    });
+
+    // thumbnails
+    document.querySelectorAll('.gallery .thumbs img').forEach(t=>{
+      t.onclick = () => {
+        document.querySelectorAll('.gallery .thumbs img').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        document.querySelector('.gallery .main').innerHTML = Henaya.imgWithFallback(p.images[+t.dataset.i], p.name);
+      };
+    });
+
+    // related (same category, exclude current)
+    const related = HENAYA_PRODUCTS.filter(x=>x.cat===p.cat && x.id!==p.id).slice(0,4);
+    document.getElementById('related').innerHTML = related.map(rp=>`
+      <article class="card">
+        <a class="img" href="product.html?id=${rp.id}">${Henaya.imgWithFallback(rp.images[0], rp.name)}</a>
+        <div class="body">
+          <div class="cat">${findCategory(rp.cat).name} · ${rp.weight}</div>
+          <a class="name" href="product.html?id=${rp.id}">${rp.name}</a>
+          <div class="price-row"><span class="price">${Henaya.fmtSAR(rp.price)} <span class="sar">ر.س</span></span></div>
+        </div>
+      </article>`).join('');
+  }
+
+  function chg(d){
+    const i = document.getElementById('qty');
+    i.value = Math.max(1, (+i.value||1)+d);
+  }
+  function addToCart(buyNow){
+    const qty = Math.max(1, +document.getElementById('qty').value || 1);
+    Cart.add(id, qty);
+    if(!buyNow) Henaya.toast(`أضيف ${qty} إلى السلة ✓`);
+  }
+</script>
+</body>
+</html>

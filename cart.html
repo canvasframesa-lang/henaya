@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>سلة التسوق — حنايـة</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+<main>
+  <section class="section">
+    <div class="container">
+      <nav style="font-size:.85rem;color:var(--ink-soft);margin-bottom:.6rem;">
+        <a href="index.html">الرئيسية</a> ‹ السلة
+      </nav>
+      <h1>سلة التسوق</h1>
+      <div id="root"></div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/cart.js"></script>
+<script>
+  Henaya.injectChrome();
+  const root = document.getElementById('root');
+
+  function render(){
+    const items = Cart.detailed();
+    const t = Cart.totals();
+    if(items.length===0){
+      root.innerHTML = `
+        <div class="empty">
+          <div class="ico">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h2l2.4 12.3a2 2 0 0 0 2 1.7h8.2a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/></svg>
+          </div>
+          <h2 style="margin:.5rem 0;">سلتك فارغة</h2>
+          <p>تصفحي منتجاتنا وأضيفي ما يعجبك.</p>
+          <a class="btn btn-primary" href="products.html">ابدئي التسوق</a>
+        </div>`;
+      return;
+    }
+    root.innerHTML = `
+    <div class="layout-2">
+      <div class="panel">
+        <h3 style="margin:0 0 1rem;">المنتجات (${t.count})</h3>
+        ${items.map(i => `
+          <div class="cart-line">
+            ${Henaya.imgWithFallback(i.images[0], i.name)}
+            <div>
+              <div class="name">${i.name}</div>
+              <div style="color:var(--ink-soft);font-size:.85rem;">${findCategory(i.cat).name} · ${i.weight}</div>
+              <div class="row">
+                <div class="qty">
+                  <button onclick="Cart.update('${i.id}', ${i.qty-1});render()">−</button>
+                  <input value="${i.qty}" oninput="const v=Math.max(1,+this.value||1);Cart.update('${i.id}',v);render();" />
+                  <button onclick="Cart.update('${i.id}', ${i.qty+1});render()">+</button>
+                </div>
+                <button class="remove" onclick="Cart.remove('${i.id}');render()">🗑 حذف</button>
+              </div>
+            </div>
+            <div style="text-align:left;">
+              <div style="color:var(--primary-dark);font-weight:800;">${Henaya.fmtSAR(i.lineTotal)} <span style="font-size:.75rem;color:var(--ink-soft)">ر.س</span></div>
+              <small style="color:var(--ink-soft);">${i.qty} × ${Henaya.fmtSAR(i.price)}</small>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="panel" style="position:sticky;top:90px;align-self:start;">
+        <h3 style="margin:0 0 1rem;">ملخص الطلب</h3>
+        <div class="summary-row"><span>المجموع الفرعي</span><b>${Henaya.fmtSAR(t.subtotal)} ر.س</b></div>
+        <div class="summary-row"><span>الشحن</span><b>${t.shipping===0?'مجاني 🎁':Henaya.fmtSAR(t.shipping)+' ر.س'}</b></div>
+        <div class="summary-row" style="color:var(--ink-soft);font-size:.85rem;"><span>شامل ضريبة 15% (تقديري)</span><span>${Henaya.fmtSAR(t.tax)} ر.س</span></div>
+        ${t.subtotal<200 ? `<div style="background:var(--cream-2);border-radius:12px;padding:.7rem;margin-top:.5rem;font-size:.85rem;color:var(--primary-dark);">
+          🎁 أضيفي بـ <b>${Henaya.fmtSAR(200-t.subtotal)} ر.س</b> للحصول على شحن مجاني
+        </div>` : ''}
+        <div class="summary-row total"><span>الإجمالي</span><span>${Henaya.fmtSAR(t.total)} ر.س</span></div>
+
+        <div style="margin:1rem 0;">
+          <label class="lbl">كود الخصم</label>
+          <div style="display:flex;gap:.5rem;">
+            <input class="field" placeholder="HENAYA15" />
+            <button class="btn btn-ghost">تطبيق</button>
+          </div>
+        </div>
+
+        <a href="checkout.html" class="btn btn-primary btn-block" style="margin-top:.5rem;">
+          إتمام الطلب ←
+        </a>
+        <a href="products.html" class="btn btn-ghost btn-block" style="margin-top:.5rem;">متابعة التسوق</a>
+      </div>
+    </div>`;
+  }
+  render();
+  window.addEventListener('cart:change', render);
+</script>
+</body>
+</html>

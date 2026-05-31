@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>إتمام الطلب — حنايـة</title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+<main>
+  <section class="section">
+    <div class="container">
+      <nav style="font-size:.85rem;color:var(--ink-soft);margin-bottom:.6rem;">
+        <a href="index.html">الرئيسية</a> ‹ <a href="cart.html">السلة</a> ‹ الدفع
+      </nav>
+      <h1>إتمام الطلب</h1>
+
+      <div class="layout-2">
+        <form class="panel" id="form" onsubmit="event.preventDefault(); placeOrder();">
+          <h3 style="margin:0 0 1rem;">معلومات التوصيل</h3>
+          <div class="form-row">
+            <div><label class="lbl">الاسم الكامل</label><input class="field" required name="name"/></div>
+            <div><label class="lbl">رقم الجوال</label><input class="field" required name="phone" placeholder="05XXXXXXXX"/></div>
+          </div>
+          <div class="form-row">
+            <div><label class="lbl">البريد الإلكتروني</label><input class="field" type="email" required name="email"/></div>
+            <div><label class="lbl">المدينة</label>
+              <select class="field" required name="city">
+                <option value="">اختاري المدينة...</option>
+                <option>الرياض</option><option>جدة</option><option>مكة المكرمة</option><option>المدينة المنورة</option>
+                <option>الدمام</option><option>الخبر</option><option>الطائف</option><option>تبوك</option>
+                <option>أبها</option><option>القصيم</option><option>حائل</option><option>جازان</option>
+              </select>
+            </div>
+          </div>
+          <label class="lbl">العنوان التفصيلي</label>
+          <input class="field" required name="addr1" placeholder="الحي، الشارع، رقم المبنى" style="margin-bottom:1rem;"/>
+          <label class="lbl">ملاحظات للطلب (اختياري)</label>
+          <textarea class="field" name="notes" rows="3" placeholder="مثلاً: تغليف هدية، وقت توصيل مفضل..." style="margin-bottom:1.3rem;"></textarea>
+
+          <h3 style="margin:1rem 0;">طريقة الدفع</h3>
+          <div style="display:grid;gap:.5rem;">
+            <label style="display:flex;align-items:center;gap:.7rem;padding:.9rem;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--cream);">
+              <input type="radio" name="pay" value="card" checked />
+              <span style="font-weight:700;">💳 بطاقة ائتمان / مدى</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:.7rem;padding:.9rem;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--cream);">
+              <input type="radio" name="pay" value="apple" />
+              <span style="font-weight:700;"> Apple Pay</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:.7rem;padding:.9rem;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--cream);">
+              <input type="radio" name="pay" value="stc" />
+              <span style="font-weight:700;">📱 STC Pay</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:.7rem;padding:.9rem;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--cream);">
+              <input type="radio" name="pay" value="cod" />
+              <span style="font-weight:700;">💰 الدفع عند الاستلام</span>
+              <span style="margin-inline-start:auto;font-size:.8rem;color:var(--ink-soft);">+10 ر.س</span>
+            </label>
+          </div>
+
+          <button class="btn btn-primary btn-block" style="margin-top:1.5rem;font-size:1.05rem;">
+            🔒 تأكيد الطلب والدفع
+          </button>
+          <p style="text-align:center;color:var(--ink-soft);font-size:.8rem;margin:.8rem 0 0;">
+            بالضغط على "تأكيد الطلب" أنتِ توافقين على شروط الخدمة وسياسة الخصوصية.
+          </p>
+        </form>
+
+        <div class="panel" style="position:sticky;top:90px;align-self:start;">
+          <h3 style="margin:0 0 1rem;">ملخص طلبك</h3>
+          <div id="lines" style="margin-bottom:1rem;"></div>
+          <div id="totals"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success modal -->
+  <div id="success" style="display:none;position:fixed;inset:0;background:rgba(42,51,34,.7);z-index:100;align-items:center;justify-content:center;padding:1rem;">
+    <div style="background:#fff;border-radius:20px;padding:2.5rem 2rem;max-width:480px;text-align:center;box-shadow:var(--shadow-lg);">
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#7A9B5E,#3A5028);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h2 style="margin:0 0 .5rem;">تم استلام طلبك! 🎉</h2>
+      <p style="color:var(--ink-soft);">شكراً لاختيارك حنايـة. سيتم التواصل معك قريباً لتأكيد الشحن.<br/>
+      رقم الطلب: <b style="color:var(--primary-dark);" id="order-no"></b></p>
+      <a href="index.html" class="btn btn-primary" style="margin-top:1rem;">العودة للرئيسية</a>
+    </div>
+  </div>
+</main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/cart.js"></script>
+<script>
+  Henaya.injectChrome();
+  const items = Cart.detailed();
+
+  if(items.length===0){
+    document.getElementById('form').style.display='none';
+    document.querySelector('.panel:last-child').innerHTML = `
+      <div class="empty">
+        <p>سلتك فارغة.</p>
+        <a class="btn btn-primary" href="products.html">تسوقي الآن</a>
+      </div>`;
+  } else {
+    document.getElementById('lines').innerHTML = items.map(i=>`
+      <div style="display:flex;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--line);">
+        <div style="width:54px;height:54px;border-radius:10px;overflow:hidden;background:var(--cream-2);flex-shrink:0;">
+          ${Henaya.imgWithFallback(i.images[0], i.name)}
+        </div>
+        <div style="flex:1;font-size:.9rem;">
+          <div style="font-weight:700;color:var(--primary-dark);">${i.name}</div>
+          <div style="color:var(--ink-soft);font-size:.8rem;">${i.qty} × ${Henaya.fmtSAR(i.price)} ر.س</div>
+        </div>
+        <div style="font-weight:800;color:var(--primary-dark);">${Henaya.fmtSAR(i.lineTotal)}</div>
+      </div>`).join('');
+
+    const t = Cart.totals();
+    document.getElementById('totals').innerHTML = `
+      <div class="summary-row"><span>المجموع الفرعي</span><b>${Henaya.fmtSAR(t.subtotal)} ر.س</b></div>
+      <div class="summary-row"><span>الشحن</span><b>${t.shipping===0?'مجاني 🎁':Henaya.fmtSAR(t.shipping)+' ر.س'}</b></div>
+      <div class="summary-row" style="color:var(--ink-soft);font-size:.85rem;"><span>شامل ضريبة 15%</span><span>${Henaya.fmtSAR(t.tax)}</span></div>
+      <div class="summary-row total"><span>الإجمالي</span><span>${Henaya.fmtSAR(t.total)} ر.س</span></div>`;
+  }
+
+  function placeOrder(){
+    const orderNo = 'HNY-' + Math.random().toString(36).slice(2,8).toUpperCase();
+    document.getElementById('order-no').textContent = orderNo;
+    document.getElementById('success').style.display='flex';
+    Cart.clear();
+  }
+</script>
+</body>
+</html>

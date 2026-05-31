@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>المنتجات — حنايـة</title>
+<meta name="description" content="جميع منتجات حنايـة: حناء، سدر، إثمد، زيوت وأعشاب طبيعية. فلاتر وأسعار شفافة." />
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+
+<main>
+  <section style="padding:2rem 0 1rem;background:linear-gradient(180deg,#FFFDF7,var(--cream));">
+    <div class="container">
+      <nav style="font-size:.85rem;color:var(--ink-soft);margin-bottom:.6rem;">
+        <a href="index.html">الرئيسية</a> ‹ <span id="crumb">المنتجات</span>
+      </nav>
+      <h1 id="page-title">جميع المنتجات</h1>
+      <p id="page-sub" style="color:var(--ink-soft);max-width:640px;">اختاري من تشكيلتنا الكاملة من منتجات الجمال الطبيعي.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:1.5rem;">
+    <div class="container">
+
+      <!-- Category chips -->
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <button class="chip active" data-cat="all">الكل</button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <input type="search" id="q" placeholder="🔍 ابحثي عن منتج..." />
+        <select id="sort">
+          <option value="popular">الأكثر شعبية</option>
+          <option value="price-asc">السعر: من الأقل</option>
+          <option value="price-desc">السعر: من الأعلى</option>
+          <option value="rating">الأعلى تقييماً</option>
+          <option value="new">الأحدث</option>
+        </select>
+        <select id="price">
+          <option value="all">كل الأسعار</option>
+          <option value="0-30">حتى 30 ر.س</option>
+          <option value="30-50">30 - 50 ر.س</option>
+          <option value="50-100">50 - 100 ر.س</option>
+        </select>
+        <span id="count" style="color:var(--ink-soft);font-size:.9rem;margin-inline-start:auto;"></span>
+      </div>
+
+      <div class="cards" id="grid"></div>
+      <div id="empty" class="empty" style="display:none;">
+        <div class="ico">🔍</div>
+        <h3 style="margin:0 0 .3rem;">لا توجد نتائج مطابقة</h3>
+        <p>جربي تعديل الفلاتر أو البحث بكلمات مختلفة.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/cart.js"></script>
+<script>
+  Henaya.injectChrome('products');
+
+  const qs = new URLSearchParams(location.search);
+  let activeCat = qs.get('cat') || 'all';
+
+  // build chip bar (all + categories)
+  const chipBar = document.querySelector('.chip').parentElement;
+  HENAYA_CATEGORIES.forEach(c=>{
+    const b = document.createElement('button');
+    b.className = 'chip' + (activeCat===c.id?' active':'');
+    b.dataset.cat = c.id;
+    b.textContent = c.name;
+    chipBar.appendChild(b);
+  });
+  // initial active state
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('active', c.dataset.cat===activeCat);
+    c.onclick = ()=>{ activeCat = c.dataset.cat; updateHead(); render(); chipsActive(); };
+  });
+  function chipsActive(){
+    document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.dataset.cat===activeCat));
+    const url = new URL(location);
+    if(activeCat==='all') url.searchParams.delete('cat'); else url.searchParams.set('cat', activeCat);
+    history.replaceState({}, '', url);
+  }
+
+  function updateHead(){
+    if(activeCat==='all'){
+      document.getElementById('page-title').textContent = 'جميع المنتجات';
+      document.getElementById('page-sub').textContent = 'اختاري من تشكيلتنا الكاملة من منتجات الجمال الطبيعي.';
+      document.getElementById('crumb').textContent = 'المنتجات';
+    } else {
+      const c = findCategory(activeCat);
+      document.getElementById('page-title').textContent = c.name;
+      document.getElementById('page-sub').textContent = 'تشكيلة منتقاة من ' + c.name + ' بأعلى جودة.';
+      document.getElementById('crumb').textContent = c.name;
+    }
+  }
+  updateHead();
+
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  const $q = document.getElementById('q');
+  const $sort = document.getElementById('sort');
+  const $price = document.getElementById('price');
+  $q.oninput = $sort.onchange = $price.onchange = render;
+
+  function card(p){
+    const old = p.oldPrice ? `<span class="old">${Henaya.fmtSAR(p.oldPrice)}</span>` : '';
+    const tag = p.badge ? `<span class="tag ${p.oldPrice?'sale':'new'}">${p.badge}</span>` : '';
+    const stars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5-Math.round(p.rating));
+    return `
+    <article class="card">
+      <a class="img" href="product.html?id=${p.id}">
+        ${tag}
+        ${Henaya.imgWithFallback(p.images[0], p.name)}
+      </a>
+      <div class="body">
+        <div class="cat">${findCategory(p.cat).name} · ${p.weight}</div>
+        <a class="name" href="product.html?id=${p.id}">${p.name}</a>
+        <div class="rating">${stars} <span style="color:var(--ink-soft)">(${p.reviews})</span></div>
+        <div class="price-row">
+          <span class="price">${Henaya.fmtSAR(p.price)} <span class="sar">ر.س</span></span>
+          ${old}
+        </div>
+      </div>
+      <div class="actions">
+        <a href="product.html?id=${p.id}" class="btn btn-ghost btn-sm">تفاصيل</a>
+        <button class="btn btn-primary btn-sm" onclick="Cart.add('${p.id}');Henaya.toast('أضيف إلى السلة ✓');">أضف للسلة</button>
+      </div>
+    </article>`;
+  }
+
+  function render(){
+    let list = [...HENAYA_PRODUCTS];
+    if(activeCat!=='all') list = list.filter(p=>p.cat===activeCat);
+    const q = $q.value.trim();
+    if(q) list = list.filter(p => (p.name+' '+p.short+' '+(p.benefits||[]).join(' ')).includes(q));
+    const pr = $price.value;
+    if(pr!=='all'){
+      const [a,b] = pr.split('-').map(Number);
+      list = list.filter(p=>p.price>=a && p.price<=b);
+    }
+    switch($sort.value){
+      case 'price-asc':  list.sort((a,b)=>a.price-b.price); break;
+      case 'price-desc': list.sort((a,b)=>b.price-a.price); break;
+      case 'rating':     list.sort((a,b)=>b.rating-a.rating); break;
+      case 'new':        list.reverse(); break;
+      default:           list.sort((a,b)=>b.reviews-a.reviews);
+    }
+    document.getElementById('count').textContent = `${list.length} منتج`;
+    if(list.length===0){ grid.innerHTML=''; empty.style.display='block'; }
+    else { empty.style.display='none'; grid.innerHTML = list.map(card).join(''); }
+  }
+  render();
+</script>
+</body>
+</html>
