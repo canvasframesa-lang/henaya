@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FAF4E8"/>
+      <stop offset=".55" stop-color="#F0E8D6"/>
+      <stop offset="1" stop-color="#EBD2C9"/>
+    </linearGradient>
+    <linearGradient id="sageG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A3BC93"/>
+      <stop offset="1" stop-color="#4A6B5D"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <ellipse cx="900" cy="120" rx="380" ry="220" fill="#D4A89A" opacity=".22"/>
+  <ellipse cx="200" cy="540" rx="320" ry="200" fill="#7B9472" opacity=".25"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- decorative botanical accent (mirrored sprig) -->
+  <g transform="translate(60,80) scale(2.6)" opacity=".85">
+    <path d="M40 96 Q 32 72, 40 52 Q 48 32, 40 14" stroke="url(#sageG)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M36 80 Q 18 78, 14 67 Q 28 74, 38 80 Z" fill="url(#sageG)"/>
+    <path d="M42 76 Q 60 73, 64 62 Q 50 70, 40 76 Z" fill="url(#sageG)"/>
+    <path d="M38 58 Q 20 53, 18 42 Q 32 50, 40 58 Z" fill="url(#sageG)"/>
+    <path d="M42 54 Q 58 48, 60 37 Q 48 46, 40 54 Z" fill="url(#sageG)"/>
+    <path d="M38 36 Q 26 30, 26 22 Q 36 28, 40 36 Z" fill="url(#sageG)"/>
+    <path d="M42 32 Q 54 26, 54 18 Q 44 24, 40 32 Z" fill="url(#sageG)"/>
+    <circle cx="40" cy="11" r="6" fill="#D4A89A"/>
+  </g>
+
+  <!-- main wordmark + content (RTL block on the right) -->
+  <g text-anchor="end">
+    <!-- eyebrow ornament -->
+    <line x1="980" y1="195" x2="1110" y2="195" stroke="#BFA068" stroke-width="2"/>
+    <text x="1130" y="200" font-family="serif" font-size="26" fill="#BFA068" font-weight="400" letter-spacing="6">طقوس جمال موروثة</text>
+
+    <!-- big wordmark -->
+    <text x="1130" y="320" font-family="serif" font-size="160" font-weight="700" fill="#4A3C2E">حنايـة</text>
+
+    <!-- subtitle -->
+    <text x="1130" y="395" font-family="serif" font-size="40" font-weight="500" fill="#4A6B5D">حنّاء · سدر · إثمد · أعشاب طبيعيّة</text>
+
+    <!-- divider rose -->
+    <circle cx="1110" cy="455" r="5" fill="#D4A89A"/>
+    <line x1="850" y1="455" x2="1095" y2="455" stroke="#D4A89A" stroke-width="2" opacity=".6"/>
+
+    <!-- value props row -->
+    <text x="1130" y="510" font-family="serif" font-size="28" fill="#6B5340" font-weight="500">طبيعي 100% · توصيل سريع · أسعار شفافة</text>
+  </g>
+
+  <!-- bottom URL bar -->
+  <rect x="0" y="585" width="1200" height="45" fill="#4A3C2E"/>
+  <text x="600" y="615" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#FAF4E8" letter-spacing="3">HENAYA.SA — متجر الجمال الطبيعي</text>
+</svg>

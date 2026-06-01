@@ -1,0 +1,15 @@
+{
+  "name": "حنايـة — متجر الجمال الطبيعي",
+  "short_name": "حنايـة",
+  "description": "متجر حنايـة لمنتجات الجمال الطبيعي: حناء، سدر، كحل الإثمد، وأعشاب.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/henaya/",
+  "scope": "/henaya/",
+  "display": "standalone",
+  "background_color": "#FAF4E8",
+  "theme_color": "#4A6B5D",
+  "icons": [
+    { "src": "assets/img/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

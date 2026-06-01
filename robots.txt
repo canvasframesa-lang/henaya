@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Don't index user-specific pages
+Disallow: /cart.html
+Disallow: /checkout.html
+
+# Allow Google to crawl assets
+Allow: /assets/
+
+Sitemap: https://canvasframesa-lang.github.io/henaya/sitemap.xml

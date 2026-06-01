@@ -3,8 +3,34 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>تفاصيل المنتج — حنايـة</title>
+
+<!-- Default tags (overridden by JS when product loads) -->
+<title>تفاصيل المنتج | حنايـة</title>
+<meta name="description" content="تفاصيل وفوائد وطريقة استخدام منتجات حنايـة الطبيعية." id="meta-desc" />
+<meta name="keywords" content="حناء, سدر, إثمد, منتجات طبيعية, متجر حنايـة" id="meta-keys" />
+<meta name="author" content="حنايـة - Henaya" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#4A6B5D" />
+
+<link rel="canonical" href="https://canvasframesa-lang.github.io/henaya/product.html" id="canon" />
+<link rel="alternate" hreflang="ar" href="https://canvasframesa-lang.github.io/henaya/product.html" id="alt-ar" />
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg" />
+
+<meta property="og:type" content="product" />
+<meta property="og:site_name" content="حنايـة" />
+<meta property="og:locale" content="ar_SA" />
+<meta property="og:title" content="منتج | حنايـة" id="og-title" />
+<meta property="og:description" content="" id="og-desc" />
+<meta property="og:url" content="https://canvasframesa-lang.github.io/henaya/product.html" id="og-url" />
+<meta property="og:image" content="https://canvasframesa-lang.github.io/henaya/assets/img/og-cover.svg" id="og-img" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="منتج | حنايـة" id="tw-title" />
+<meta name="twitter:description" content="" id="tw-desc" />
+<meta name="twitter:image" content="https://canvasframesa-lang.github.io/henaya/assets/img/og-cover.svg" id="tw-img" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
@@ -37,7 +63,62 @@
       </div>`;
   } else {
     const cat = findCategory(p.cat);
-    document.title = p.name + ' — حنايـة';
+    const url = 'https://canvasframesa-lang.github.io/henaya/product.html?id=' + p.id;
+    const desc = p.short + ' السعر: ' + p.price + ' ر.س · ' + p.weight + ' · توصيل سريع لكل المملكة.';
+
+    // ===== SEO meta injection =====
+    document.title = p.name + ' | حنايـة — ' + cat.name + ' طبيعي';
+    document.getElementById('meta-desc').setAttribute('content', desc);
+    document.getElementById('meta-keys').setAttribute('content', `${p.name}, ${cat.name}, ${p.benefits.join(', ')}, متجر حنايـة, منتجات طبيعية`);
+    document.getElementById('canon').setAttribute('href', url);
+    document.getElementById('alt-ar').setAttribute('href', url);
+    document.getElementById('og-title').setAttribute('content', p.name + ' | حنايـة');
+    document.getElementById('og-desc').setAttribute('content', desc);
+    document.getElementById('og-url').setAttribute('content', url);
+    document.getElementById('og-img').setAttribute('content', p.images[0]);
+    document.getElementById('tw-title').setAttribute('content', p.name);
+    document.getElementById('tw-desc').setAttribute('content', desc);
+    document.getElementById('tw-img').setAttribute('content', p.images[0]);
+
+    // ===== JSON-LD Product + Breadcrumb =====
+    const ld = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Product",
+          "name": p.name,
+          "description": p.desc,
+          "image": p.images,
+          "sku": p.id,
+          "brand": {"@type":"Brand","name":"حنايـة"},
+          "category": cat.name,
+          "aggregateRating": {"@type":"AggregateRating","ratingValue":p.rating,"reviewCount":p.reviews,"bestRating":5},
+          "offers": {
+            "@type":"Offer",
+            "url": url,
+            "priceCurrency":"SAR",
+            "price": p.price,
+            "availability":"https://schema.org/InStock",
+            "itemCondition":"https://schema.org/NewCondition",
+            "seller":{"@type":"Organization","name":"حنايـة"}
+          }
+        },
+        {
+          "@type":"BreadcrumbList",
+          "itemListElement":[
+            {"@type":"ListItem","position":1,"name":"الرئيسية","item":"https://canvasframesa-lang.github.io/henaya/"},
+            {"@type":"ListItem","position":2,"name":"المنتجات","item":"https://canvasframesa-lang.github.io/henaya/products.html"},
+            {"@type":"ListItem","position":3,"name":cat.name,"item":"https://canvasframesa-lang.github.io/henaya/products.html?cat="+cat.id},
+            {"@type":"ListItem","position":4,"name":p.name,"item":url}
+          ]
+        }
+      ]
+    };
+    const ldScript = document.createElement('script');
+    ldScript.type = 'application/ld+json';
+    ldScript.textContent = JSON.stringify(ld);
+    document.head.appendChild(ldScript);
+
     document.getElementById('crumbs').innerHTML =
       `<a href="index.html">الرئيسية</a> ‹ <a href="products.html">المنتجات</a> ‹ <a href="products.html?cat=${cat.id}">${cat.name}</a> ‹ ${p.name}`;
 
